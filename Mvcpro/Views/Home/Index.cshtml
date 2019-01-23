@@ -1,0 +1,71 @@
+﻿@model Mvcpro.ViewModel.vmCinema
+
+@{
+    ViewBag.Title = "Showtimes";
+}
+<script type="text/javascript">
+
+</script>
+<h2>Index</h2>
+<div class="container">
+
+
+    <form class="frmrec">
+        <div class="col-md-12">
+
+
+            <img src="http://www.nueplex.com/assets/web/images/calander-icon.png" alt="" style=" position:relative; top:-3px" ;>SHOW TIMES
+            &nbsp; &nbsp;
+            <select class="date" name="date" id="dateShowTime" value="@ViewBag.date">
+                <option value="12/22/2017">22-DEC-2017</option>
+                <option value="12/23/2017">23-DEC-2017</option>
+                <option value="12/24/2017">24-DEC-2017</option>
+            </select>
+
+            <input type="submit" value="Search" />
+        </div>
+
+        @if (Model.Shows != null)
+        {
+            foreach (var cin in Model.Cinemas)
+            {
+                <div class="row" style="background-color:dimgrey">
+
+                    <h2>@cin.cinema_name</h2>
+                </div>
+                        <div class="row">
+                            @foreach (var date in Model.Shows)
+                            {
+
+                                if (date.cinema_id == cin.cinema_id)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="col-md-4">
+                                            <div class="img">
+                                                <img src="@date.movy.poster_path" alt="@date.movy.movie_name" title="@date.movy.movie_name" class="img-responsive" />
+
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-8">
+
+                                            <p>@date.movy.movie_name</p>
+
+                                            <p>@date.start_time - @date.end_time</p>
+
+                                            <button> @Html.ActionLink("Book Tickets", "bktickets", new { id = date.show_id }) </button>
+
+                                        </div>
+
+                                    </div>
+                                }
+                            }
+                        </div>
+            }
+        }
+
+
+
+    </form>
+
+</div>

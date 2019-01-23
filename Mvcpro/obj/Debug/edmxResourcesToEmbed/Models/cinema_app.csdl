@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="Models" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="cinema">
+    <Key>
+      <PropertyRef Name="cinema_id" />
+    </Key>
+    <Property Name="cinema_id" Type="Int32" Nullable="false" />
+    <Property Name="cinema_name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <NavigationProperty Name="shows" Relationship="Self.FK_shows_cinema" FromRole="cinema" ToRole="shows" />
+  </EntityType>
+  <EntityType Name="movy">
+    <Key>
+      <PropertyRef Name="movie_id" />
+    </Key>
+    <Property Name="movie_id" Type="Int32" Nullable="false" />
+    <Property Name="movie_name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="runtime" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="poster_path" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="shows" Relationship="Self.FK_shows_movies" FromRole="movies" ToRole="shows" />
+  </EntityType>
+  <EntityType Name="show">
+    <Key>
+      <PropertyRef Name="show_id" />
+    </Key>
+    <Property Name="show_id" Type="Int32" Nullable="false" />
+    <Property Name="movie_id" Type="Int32" Nullable="false" />
+    <Property Name="cinema_id" Type="Int32" Nullable="false" />
+    <Property Name="start_time" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="end_time" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="show_date" Type="DateTime" Precision="3" />
+    <NavigationProperty Name="cinema" Relationship="Self.FK_shows_cinema" FromRole="shows" ToRole="cinema" />
+    <NavigationProperty Name="movy" Relationship="Self.FK_shows_movies" FromRole="shows" ToRole="movies" />
+    <NavigationProperty Name="Tickets" Relationship="Self.FK_Tickets_shows" FromRole="shows" ToRole="Tickets" />
+  </EntityType>
+  <EntityType Name="Ticket">
+    <Key>
+      <PropertyRef Name="ticket_id" />
+    </Key>
+    <Property Name="ticket_id" Type="Int32" Nullable="false" />
+    <Property Name="seatno" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="show_id" Type="Int32" Nullable="false" />
+    <Property Name="ticket_price" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="show" Relationship="Self.FK_Tickets_shows" FromRole="Tickets" ToRole="shows" />
+  </EntityType>
+  <Association Name="FK_shows_cinema">
+    <End Role="cinema" Type="Self.cinema" Multiplicity="1" />
+    <End Role="shows" Type="Self.show" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="cinema">
+        <PropertyRef Name="cinema_id" />
+      </Principal>
+      <Dependent Role="shows">
+        <PropertyRef Name="cinema_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_shows_movies">
+    <End Role="movies" Type="Self.movy" Multiplicity="1" />
+    <End Role="shows" Type="Self.show" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="movies">
+        <PropertyRef Name="movie_id" />
+      </Principal>
+      <Dependent Role="shows">
+        <PropertyRef Name="movie_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Tickets_shows">
+    <End Role="shows" Type="Self.show" Multiplicity="1" />
+    <End Role="Tickets" Type="Self.Ticket" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="shows">
+        <PropertyRef Name="show_id" />
+      </Principal>
+      <Dependent Role="Tickets">
+        <PropertyRef Name="show_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="cinema_appContext" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="cinemas" EntityType="Self.cinema" />
+    <EntitySet Name="movies" EntityType="Self.movy" />
+    <EntitySet Name="shows" EntityType="Self.show" />
+    <EntitySet Name="Tickets" EntityType="Self.Ticket" />
+    <AssociationSet Name="FK_shows_cinema" Association="Self.FK_shows_cinema">
+      <End Role="cinema" EntitySet="cinemas" />
+      <End Role="shows" EntitySet="shows" />
+    </AssociationSet>
+    <AssociationSet Name="FK_shows_movies" Association="Self.FK_shows_movies">
+      <End Role="movies" EntitySet="movies" />
+      <End Role="shows" EntitySet="shows" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Tickets_shows" Association="Self.FK_Tickets_shows">
+      <End Role="shows" EntitySet="shows" />
+      <End Role="Tickets" EntitySet="Tickets" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

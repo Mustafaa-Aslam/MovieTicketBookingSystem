@@ -1,0 +1,259 @@
+﻿@model Mvcpro.ViewModel.vmCinema
+@{
+    ViewBag.Title = "bktickets";
+}
+<script type="text/javascript">
+   var totalprice = 0;
+   
+      
+   $(function () {
+
+       $("img").mouseover(function () {// mouse hover work
+           var noOfSeat = $('input.userseat').val();
+           var currentid = this.id;
+           while (noOfSeat > 0) {
+               if (document.getElementById(currentid).className != "selected") {
+                   document.getElementById(currentid).style.backgroundColor = "yellow";
+                   currentid++;
+                   noOfSeat--;
+               } else {
+                   currentid++;
+               }
+
+           }
+
+
+       });
+
+       $("img").mouseout(function () { //mouse hover work
+           var noOfSeat = $('input.userseat').val();
+           var currentid = this.id;
+           while (noOfSeat > 0) {
+               if (document.getElementById(currentid).className != "selected") {
+                   document.getElementById(currentid).style.backgroundColor = null;
+                   currentid++;
+                   noOfSeat--;
+               }
+               else {
+                   currentid++;
+               }
+
+
+           }
+       });
+       $("img").click(function () {
+           var noOfSeat = $('input.userseat').val();
+           var currentid = this.id;
+           var totalprice = 0;
+           var noOfSeats = 1;
+           var apl = "A";
+
+           for (var i = 0; i < 10; i++) {
+
+               for (var j = 1; j <= 10; j++) {
+                   
+
+                   if (noOfSeats == currentid) {
+                       alert(noOfSeats);
+                       while (noOfSeat > 0) {
+                           var d = apl + j;
+                           if (document.getElementById(currentid).className != "selected" && document.getElementById(currentid).className != "greens") {
+                               
+                               document.getElementById(currentid).className = "greens";
+                               var seatid = $("input.seatid").val();
+                               displayticket(d);
+                               totalprice += 700;
+                               currentid++;
+                               noOfSeat--;
+                               
+
+                           } else if (document.getElementById(currentid).className == "greens") {
+                               
+                               document.getElementById(currentid).className = "blank";
+                               removeticket(d);
+                               currentid++;
+                               noOfSeat--;
+                               totalprice -= 700;
+                           }
+
+                           else {
+                               currentid++;
+                           }
+                           j++;
+
+                       }
+                   }
+                   noOfSeats++;//total no of seats it means 10*10=100 in 1 cinema
+               }
+               apl = nextChar(apl);
+           }
+           $("input.prix").val(totalprice);
+       });
+       //     
+
+
+
+
+
+
+
+
+
+       function displayticket(seatno) { //display ticket with price
+           var div = $("<div/>").attr({ id: seatno });
+           var rs = 700;
+
+           $("<label/>").text("Seat No").appendTo(div);
+
+           $('<input>').attr({
+               type: 'text',
+               name: 'seatno1',
+               value: seatno,
+               class: "seat",
+               readonly: "readonly"
+           }).appendTo(div);
+
+           $("<label/>").text("Rs: ").appendTo(div);
+
+           $('<input>').attr({
+               name: 'price',
+               type: 'text',
+               class: "seat",
+               value: rs,
+               readonly: "readonly"
+
+           }).appendTo(div);
+           $("<br />").appendTo(div);
+           
+           $("#list").append(div);
+
+       }
+   });
+  
+
+          
+        
+
+
+
+          function removeticket(seano) { // remove seat
+              document.getElementById(seano).remove();
+          }
+          function nextChar(ch) {//move character
+              return String.fromCharCode(ch.charCodeAt(0) + 1);
+          }
+     
+          function sub() {//finally form submit 
+              $('#frmec1').attr('method', 'post');
+              $('#frmec1').submit();
+          }
+
+      </script>
+
+<h2>Book Tickets</h2>
+<div class="container" style="text-align:center">
+    <form id="frmec1">
+        <div class="row">
+           <label>Enter No Of Seats:</label>
+             <input type="text" class="userseat" value="">
+        </div>
+
+        @{ 
+            //using for assigning booked seats in array 
+            String[,] arr = new String[11,11];
+            if (Model.ticketinfo.Count() > 0) {
+                String[] seats = new string[101]; //size is depand upon no of seats in cinema
+
+                int no = 1;
+                foreach (var se in Model.ticketinfo)
+                {
+
+                    seats[no] = se.seatno;
+                    no++;
+                }
+                int coun = 1;//use for no of rows
+                int noofselseats = 1;//use for count no of booked seats
+                for (int i = 1; i <=10 ; i++)
+                {
+
+                    for (int j = 1; j <= 10; j++)
+                    {
+                        String convert = (Convert.ToChar(64 + coun) + "" + j);
+                        if (convert.Equals(seats[noofselseats])) {
+                            arr[i,j]=seats[noofselseats];
+
+                            noofselseats++;
+                        }
+
+                    }
+                    coun++;
+                }
+
+            }
+        }
+        @*For calculating seat numbers on runtime, and anchoring it on images.*@
+        @{  int k = 1;
+            int count = 1;
+            int l = 0;
+         }
+       @for (int i = 1; i <= 10; i++)
+       {
+        <div class="row">
+            <span>@Convert.ToChar(64 + count)</span>
+
+                        @for (int j = 1; j <= 10; j++)
+                        {
+                            
+                            if (Model.ticketinfo.Count() > 0)
+                            {
+                                
+                                    //string seatchar = (Convert.ToChar(64 + count) + "" + j);
+                                    var sel = "";
+                                    if (arr[i,j] == (Convert.ToChar(64 + count) + "" + j))
+                                    {
+                                        sel = "selected";
+                                    }
+                                    else
+                                    {
+                                        sel = "img2";
+                                    }
+                                    <input type="hidden" name="seatid" class="seatid" value="@(Convert.ToChar(64 + count) + "" + j)" />
+                                    <a href="#" id="seatid" class="seatid" name="@(Convert.ToChar(64 + count) + "" + j)">
+                                        <img src="~/images/seat.png" class="@sel" alt="@(Convert.ToChar(64 + count) + "" + j)" title="@(Convert.ToChar(64 + count) + "" + j)" id="@(k)" style="width:50px;height:50px;margin:5px" />
+                                    </a>
+                                                l = k;
+                                                k++;
+
+                                
+                                   }
+                                        else
+                                        {
+                            <input type="hidden" id="seatno" name="seatno" value="" readonly="readonly"/>
+                            <a href="#" id="seatid" class="seatid" name="@(Convert.ToChar(64 + count) + "" + j)">
+                            <img src="~/images/seat.png" class="img2" alt="@(Convert.ToChar(64 + count) + "" + j)"   title="@(Convert.ToChar(64 + count) + "" + j)" id="@(k)" style="width:50px;height:50px;margin:5px" /></a>
+                                    l = k;
+                                    k++;
+                                }
+
+                        }
+                        @{count++;}
+                 </div>
+                            }
+        
+        <div id="list" style="text-align:left">
+         <br /> 
+        </div>
+
+        <div id="price" style="text-align:left;">
+        <br />
+              <label>Total Price:</label>
+             <input type="text" class="prix" value="" style="background-color:dimgray;border:hidden" readonly="readonly" />
+        </div>
+
+        <div>
+            <input class="form-control" type="hidden" name="showid" value="@Model.showinfo.show_id" readonly="readonly" />
+            <input type="submit" onclick="sub()" class="btn btn-primary" value="Submit"/>
+        </div>
+
+    </form>
+</div>
